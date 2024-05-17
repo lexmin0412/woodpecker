@@ -1,0 +1,13 @@
+{
+  "name": "monorepo-template",
+  "description": "基于 Lerna8 + Pnpm workspace 的 Monorepo 仓库模板",
+  "private": true,
+  "scripts": {
+    "new:pkg": "lerna create",
+    "ci:version": "lerna version patch --yes --conventional-commits --create-release github",
+    "ci:publish": "lerna publish from-package --yes"
+  },
+  "devDependencies": {
+    "lerna": "^8.0.0"
+  }
+}
