@@ -7,9 +7,10 @@ const genAnalyzeRes = async() => {
 	}).toString()
 	const lines = result.toString().split('\n')
 	const formattedRes = lines.map(line => {
-		const [type, message] = line.split(' ')
+		const [type, ...restText] = line.split(' ')
+		const message = restText.join(' ')
 		const typeText = type.split('::')[1]
-		const otherProps: Record<string, unknown> = {}
+		const otherProps: Record<string, string> = {}
 		if (message) {
 			message.split(',').forEach((item)=>{
 				const [key, value] = item.split('=')
