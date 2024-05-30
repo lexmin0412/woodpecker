@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "lib": [
+      "es6",
+			"ES2020"
+    ],
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+		"esModuleInterop": true
+  },
+  "includes": [
+    "./gen.ts",
+		"src/*"
+  ]
+}
