@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
 	const body = await request.json();
 
-	const oxlintPath = path.join(os.homedir(),'./code/git_repos/woodpecker/node_modules/.bin/oxlint')
+	// const oxlintPath = path.join(os.homedir(),'./code/git_repos/woodpecker/node_modules/.bin/oxlint')
 
 	fs.rmSync('/tmp/woodpecker', {
 		force: true,
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
 	const repoTempPath = path.join("/tmp/woodpecker", body.repoName)
 
-	const result = execSync(`${oxlintPath} --format github`, {
+	const result = execSync(`npx oxlint --format github`, {
 		cwd: repoTempPath
 	}).toString()
 	const lines = result.toString().split('\n').filter(Boolean)
