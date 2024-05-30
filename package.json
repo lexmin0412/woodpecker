@@ -40,7 +40,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "bin": {
-    "woodpecker": "./lib/cli.js",
+    "woodpecker": "./lib/src/cli.js",
 		"ttt": "./gen.ps1"
   },
   "devDependencies": {
