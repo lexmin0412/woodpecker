@@ -1,14 +1,10 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { execSync } from "child_process";
-import os  from 'os'
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
 	const body = await request.json();
-
-	// const oxlintPath = path.join(os.homedir(),'./code/git_repos/woodpecker/node_modules/.bin/oxlint')
-
 	fs.rmSync('/tmp/woodpecker', {
 		force: true,
 		recursive: true
