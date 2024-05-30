@@ -73,7 +73,7 @@ export default function Editor(props: EditorProps) {
 				一键检测
 			</button>
 			<div className="flex items-start mt-8">
-				<span>内容：</span>
+				<span>结果：</span>
 				<textarea className="text-black outline-none p-2 rounded inline-block w-[60vw] h-[60vh]" ref={contentRef} />
 			</div>
 		</div>
