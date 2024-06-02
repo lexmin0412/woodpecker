@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { execSync } from "child_process";
 import { NextResponse } from "next/server";
+import OSSClient from '@/utils/oss'
 
 export async function POST(request: Request) {
 	const body = await request.json();
@@ -31,13 +32,26 @@ export async function POST(request: Request) {
 		const otherProps: Record<string, string> = {}
 		if (message) {
 			message.split(',').forEach((item) => {
-				const [key, value] = item.split('=')
-				otherProps[key] = value
+				const [key, ...restContent] = item.split('=')
+				otherProps[key] = restContent.join('=')
 			})
 		}
 		return { type: typeText, otherProps }
 	})
 	const finalRes = JSON.stringify(formattedRes, null, 2)
+
+	// 上传到 OSS
+	try {
+		const upload2OSS = await OSSClient.add(finalRes, {
+			platform: 'github',
+			userName: body.userName,
+			repoName: body.repoName,
+		})
+		console.log('upload2OSS', upload2OSS)
+	} catch (error) {
+		console.error('upload2OSS error', error)
+	}
+
 	return NextResponse.json(finalRes);
 }
 
