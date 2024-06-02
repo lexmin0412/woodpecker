@@ -40,3 +40,14 @@ export async function POST(request: Request) {
 	const finalRes = JSON.stringify(formattedRes, null, 2)
 	return NextResponse.json(finalRes);
 }
+
+export async function GET(request: Request) {
+
+	const { searchParams } = new URL(request.url)
+	const userName = searchParams.get('userName')
+	console.log('userName', userName)
+
+	const res = await (await fetch(`https://api.github.com/users/${userName}/repos`)).json()
+
+	return NextResponse.json(res);
+}

@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.0.4",
     "@toolkit-fe/request": "^0.1.22",
     "next": "14.2.1",
     "react": "^18",
