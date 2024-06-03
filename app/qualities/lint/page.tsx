@@ -106,7 +106,7 @@ export default function LintQualityPage({
 				<div className="flex-1 overflow-auto px-6">
 					{content?.map((item: IProblem) => {
 						return (
-							<div className="border border-solid border-gray-600 p-3 rounded-xl mb-2">
+							<div className="border border-solid border-gray-600 p-3 rounded-xl mb-2" key={`${item.type}-${item.otherProps.file}-${item.otherProps.line}-${item.otherProps.col}`}>
 								<div className="flex items-start">
 									<div>{item.type}</div>
 									<span className="mr-1">:</span>
