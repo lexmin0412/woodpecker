@@ -29,7 +29,6 @@ export default function LintQualityPage({
 	const [lastUpdated, setLastUpdated] = useState<string>("");
 
 	const initContent = async () => {
-		console.log("searchParams", searchParams);
 		const platform = "github";
 		if (searchParams.userName && searchParams.repoName) {
 			const content = (await fetch(
@@ -67,7 +66,8 @@ export default function LintQualityPage({
 				}),
 			})) as string;
 			setContent(JSON.parse(result));
-			console.log("result", result);
+			// 检测完毕之后执行初始化逻辑
+			initContent()
 		} catch (error) {
 		} finally {
 			setLoading(false);
