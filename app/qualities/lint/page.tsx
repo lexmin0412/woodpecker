@@ -1,6 +1,7 @@
 "use client";
 
 import fetch from "@toolkit-fe/request";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 interface IProblem {
@@ -115,14 +116,15 @@ export default function LintQualityPage({
 								<div>
 									<span className="mr-1 mt-1">file:</span>
 									<span>{"["}</span>
-									<a
+									<Link
 										className="text-blue-600 hover:underline cursor-pointer"
 										href={`https://github.com/${userName}/${repoName}/blob/main/${item.otherProps.file}#L${item.otherProps.line}`}
+										target='_blank'
 									>
 										{item.otherProps.file}
 										{":"}
 										{item.otherProps.line}
-									</a>
+									</Link>
 									<span>{":"}</span>
 									<span>{item.otherProps.col}</span>
 									<span>{"]"}</span>
