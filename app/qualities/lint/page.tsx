@@ -16,6 +16,9 @@ interface IProblem {
 	};
 }
 
+/**
+ * 质量检测页面
+ */
 export default function LintQualityPage({
 	searchParams,
 }: {
