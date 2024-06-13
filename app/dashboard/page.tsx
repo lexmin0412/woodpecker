@@ -9,7 +9,7 @@ export default async function Dashboard() {
 	const userName = "lexmin0412";
 
 	async function getData() {
-		const res = await fetch(`https://api.github.com/users/${userName}/repos`);
+		const res = await fetch(`https://api.github.com/users/${userName}/repos?sort=updated&per_page=100&type=owner`);
 		// The return value is *not* serialized
 		// You can return Date, Map, Set, etc.
 
