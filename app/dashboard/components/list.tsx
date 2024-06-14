@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { getAuthURL, getData, getToken } from "../actions";
+import { getAuthURL, getData, getEnvConfig, getToken } from "../actions";
 import { useSearchParams } from "next/navigation";
 
 interface IItemProps {
@@ -48,13 +48,15 @@ export default function RepoList() {
 		}
 	}, [])
 
+	const userName = getEnvConfig('GITHUB_DEFAULT_ORG')
+
 	const Item = (props: IItemProps) => {
 		return (
 			<div
 				key={props.name}
 				className="group relative gap-x-6 py-4 border-0 border-b border-solid border-gray-700"
 			>
-				<a href={`/qualities/lint?userName=lexmin0412&repoName=${props.name}`} className="text-white">
+				<a href={`/qualities/lint?userName=${userName}&repoName=${props.name}`} className="text-white">
 					<div className="flex items-center">
 						<div className="bg-green-200 rounded-[50%] w-2 h-2 flex items-center justify-center mr-2">
 							<div className="bg-green-500 rounded-[50%] w-1 h-1" />

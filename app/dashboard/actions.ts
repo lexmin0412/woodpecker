@@ -68,3 +68,10 @@ export async function getAuthURL() {
 	const oauthScope = process.env.GITHUB_OAUTH_APP_SCOPE
 	return `https://github.com/login/oauth/authorize?client_id=${oauthClientID}&redirect_uri=${encodeURIComponent(oauthRedirectURI as string)}&scope=${oauthScope}`
 }
+
+/**
+ * 获取环境变量
+ */
+export async function getEnvConfig(key: string) {
+	return process.env[key]
+}
