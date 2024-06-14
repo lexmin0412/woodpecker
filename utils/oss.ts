@@ -72,11 +72,11 @@ class OssClient {
 	}
 }
 
-console.log('process.env.OSS_REGION', process.env.OSS_REGION)
-
-export default new OssClient({
+const ossClientInstance = new OssClient({
 	region: process.env.OSS_REGION || '',
 	accessKeyId: process.env.OSS_ACCESS_KEY || '',
 	accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET || '',
 	bucket: process.env.OSS_BUCKET || '',
-});
+})
+
+export default ossClientInstance
