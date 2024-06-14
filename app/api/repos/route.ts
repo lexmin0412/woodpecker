@@ -6,6 +6,9 @@ import OSSClient from '@/utils/oss'
 
 export async function POST(request: Request) {
 	const body = await request.json();
+	if (!fs.existsSync('/tmp')) {
+		fs.mkdirSync('/tmp')
+	}
 	fs.rmSync('/tmp/woodpecker', {
 		force: true,
 		recursive: true
@@ -24,7 +27,6 @@ export async function POST(request: Request) {
 		cwd: repoTempPath
 	}).toString()
 	const lines = result.toString().split('\n').filter(Boolean)
-	console.log('lines', lines)
 	const formattedRes = lines.map(line => {
 		const [type, ...restText] = line.split(' ')
 		const message = restText.join(' ')
