@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import RepoList from "./components/list";
 
 interface IItemProps {
@@ -7,5 +8,9 @@ interface IItemProps {
 }
 
 export default async function Dashboard() {
-	return <RepoList />;
+	return (
+		<Suspense fallback='页面初始化中...'>
+			<RepoList />
+		</Suspense>
+	)
 }

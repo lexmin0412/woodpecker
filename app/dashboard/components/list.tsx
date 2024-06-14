@@ -17,6 +17,7 @@ export default function RepoList() {
 	const searchParams = useSearchParams()
 	const code = new URLSearchParams(searchParams).get('code')
 	const [authURL, setAuthURL] = useState('')
+	const [userName, setUserName] = useState('')
 
 	const fetchDataList = async(formData?: FormData) => {
 		setPending(true)
@@ -35,6 +36,11 @@ export default function RepoList() {
 		setAuthURL(res)
 	}
 
+	const initUserName = async() => {
+		const res = await getEnvConfig('GITHUB_DEFAULT_ORG')
+		setUserName(res as string)
+	}
+
 	useEffect(()=>{
 		if (code) {
 			const githubAccessToken = localStorage.getItem('GITHUB_TOKEN')
@@ -46,9 +52,9 @@ export default function RepoList() {
 		} else {
 			initAuthURL()
 		}
-	}, [])
 
-	const userName = getEnvConfig('GITHUB_DEFAULT_ORG')
+		initUserName()
+	}, [])
 
 	const Item = (props: IItemProps) => {
 		return (
