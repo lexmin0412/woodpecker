@@ -93,7 +93,7 @@ export default function LintQualityPage({
 					className="text-sm rounded h-7 leading-7 w-16 bg-blue-600  text-gray-100 hover:scale-105 transition-all"
 					onClick={handleClick}
 				>
-					检测
+				 {loading ? '检测中...' : '检测'}
 				</button>
 			</div>
 			<div className="flex-1 flex-col flex overflow-hidden w-full">
