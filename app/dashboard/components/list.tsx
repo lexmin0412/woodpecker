@@ -30,7 +30,10 @@ export default function RepoList() {
 
 	const refreshToken = async () => {
 		const res = await getToken(code as string);
-		localStorage.setItem("GITHUB_TOKEN", res.access_token);
+		if (res.access_token) {
+			localStorage.setItem("GITHUB_TOKEN", res.access_token);
+			return res.access_token;
+		}
 	};
 
 	const initAuthURL = async () => {
@@ -52,8 +55,7 @@ export default function RepoList() {
 		} else if (code) {
 			// 有 code 则通过 code 换 token
 			await refreshToken();
-			// 换到 token 之后初始化数据
-			fetchDataList()
+			init()
 		} else {
 			// 没有则展示授权入口
 			initAuthURL();
