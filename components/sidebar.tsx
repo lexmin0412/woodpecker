@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const sidebarList = [
 	{
-		title: "代码质量",
+		title: "质量管理",
 		children: [
 			{
 				title: "代码质量",
@@ -37,7 +37,7 @@ export default function Sidebar() {
 						</div>
 						{item.children?.map((child) => {
 							return (
-								<div>
+								<div key={`${item.title}${child.path}`}>
 									<Link
 										key={child.path}
 										className={`text-sm h-10 leading-10 hover:text-white cursor-pointer px-2 rounded-xl ${

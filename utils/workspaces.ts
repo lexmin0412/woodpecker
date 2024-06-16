@@ -1,10 +1,4 @@
-interface DataItem {
-	id: string;
-	name: string;
-	domain: string
-	created_at: string;
-}
-
+import { IWorkspaceItem } from "@/types";
 import OSS from "ali-oss";
 
 export interface OssClientInitProps {
@@ -36,10 +30,10 @@ class OssClient {
 				'Content-type': 'application/json'
 			}
 		})
-		const data = JSON.parse(res.content.toString())
+		const data = JSON.parse(res.content.toString()) as IWorkspaceItem[]
 		if (data) {
 			if (options.keyword) {
-				return data.filter((item) => item.name.includes(options.keyword)) || []
+				return data.filter((item) => item.name.includes(options.keyword!)) || []
 			}
 			if (options.id) {
 				return data.filter((item) => item.id === options.id) || []
@@ -66,7 +60,7 @@ class OssClient {
 		}
 	}
 
-	async add(newItem: DataItem) {
+	async add(newItem: IWorkspaceItem) {
 		const data = await this.getList()
 		const newData = [
 			...data,

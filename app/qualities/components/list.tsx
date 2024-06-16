@@ -30,7 +30,7 @@ export default function RepoList() {
 	const [workspace, setCurrentWorkspace] = useState(
 		''
 	);
-	const [workspaceList, setWorkspaceList] = useState([]);
+	const [workspaceList, setWorkspaceList] = useState<any[]>([]);
 
 	const initWorkspaceList = async () => {
 		setCurrentWorkspace(localStorage.getItem("WOODPECKER_WORKSPACE") as string)
@@ -139,7 +139,7 @@ export default function RepoList() {
 							<SelectLabel>github.com</SelectLabel>
 							{
 								workspaceList.map((item)=>{
-									return <SelectItem value={item.name}>{item.name}</SelectItem>;
+									return <SelectItem key={item.name} value={item.name}>{item.name}</SelectItem>;
 								})
 							}
 						</SelectGroup>
