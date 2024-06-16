@@ -1,8 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAuthURL, getData, getEnvConfig, getToken } from "../actions";
+import { getAuthURL, getData, getToken } from "../actions";
 import { useSearchParams } from "next/navigation";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 interface IItemProps {
 	name: string;
@@ -17,12 +26,16 @@ export default function RepoList() {
 	const code = new URLSearchParams(searchParams).get("code");
 	const [authURL, setAuthURL] = useState("");
 	const [userName, setUserName] = useState("");
+	const [workspace, setCurrentWorkspace] = useState(
+		localStorage.getItem("WOODPECKER_WORKSPACE") || ''
+	);
 
 	const fetchDataList = async (formData?: FormData) => {
 		setPending(true);
 		const data = await getData(
 			localStorage.getItem("GITHUB_TOKEN") as string,
-			formData
+			localStorage.getItem('WOODPECKER_WORKSPACE') as string,
+			formData,
 		);
 		setData(data);
 		setPending(false);
@@ -42,11 +55,11 @@ export default function RepoList() {
 	};
 
 	const initUserName = async () => {
-		const res = await getEnvConfig("GITHUB_DEFAULT_ORG");
+		const res = localStorage.getItem("WOODPECKER_WORKSPACE") as string;
 		setUserName(res as string);
 	};
 
-	const init = async() => {
+	const init = async () => {
 		const githubAccessToken = localStorage.getItem("GITHUB_TOKEN");
 
 		if (githubAccessToken) {
@@ -55,7 +68,7 @@ export default function RepoList() {
 		} else if (code) {
 			// 有 code 则通过 code 换 token
 			await refreshToken();
-			init()
+			init();
 		} else {
 			// 没有则展示授权入口
 			initAuthURL();
@@ -67,6 +80,13 @@ export default function RepoList() {
 
 		initUserName();
 	}, []);
+
+	const handleWorkspaceChange = (value: string) => {
+		localStorage.setItem('WOODPECKER_WORKSPACE', value)
+		setCurrentWorkspace(value)
+		init();
+		initUserName();
+	}
 
 	const Item = (props: IItemProps) => {
 		return (
@@ -97,6 +117,22 @@ export default function RepoList() {
 			action={fetchDataList}
 		>
 			<header className="flex items-center justify-between px-6 h-20 border-b border-solid border-gray-700">
+				<Select
+					value={workspace}
+					onValueChange={handleWorkspaceChange}
+					name="workspace"
+				>
+					<SelectTrigger className="w-[280px] text-black">
+						<SelectValue placeholder="请选择工作区" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectGroup>
+							<SelectLabel>github.com</SelectLabel>
+							<SelectItem value="lexmin0412">lexmin0412</SelectItem>
+							<SelectItem value="xjq7">xjq7</SelectItem>
+						</SelectGroup>
+					</SelectContent>
+				</Select>
 				<input
 					name="keyword"
 					type="search"

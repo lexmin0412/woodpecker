@@ -3,9 +3,8 @@
 /**
  * 获取 Github 仓库列表
  */
-export async function getData(accessToken: string, formData?: FormData) {
-	const userName = process.env.GITHUB_DEFAULT_ORG
-	const res = await fetch(`https://api.github.com/users/${userName}/repos?sort=updated&per_page=100&type=owner`, {
+export async function getData(accessToken: string, workspace: string, formData?: FormData) {
+	const res = await fetch(`https://api.github.com/users/${workspace}/repos?sort=updated&per_page=100&type=owner`, {
 		headers: {
 			'Authorization': `Bearer ${accessToken}`
 		}
