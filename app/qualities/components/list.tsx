@@ -12,6 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { getWorkspaceList } from "@/app/settings/workspaces/actions";
 
 interface IItemProps {
 	name: string;
@@ -27,8 +28,15 @@ export default function RepoList() {
 	const [authURL, setAuthURL] = useState("");
 	const [userName, setUserName] = useState("");
 	const [workspace, setCurrentWorkspace] = useState(
-		localStorage.getItem("WOODPECKER_WORKSPACE") || ''
+		''
 	);
+	const [workspaceList, setWorkspaceList] = useState([]);
+
+	const initWorkspaceList = async () => {
+		setCurrentWorkspace(localStorage.getItem("WOODPECKER_WORKSPACE") as string)
+		const data = await getWorkspaceList();
+		setWorkspaceList(data);
+	};
 
 	const fetchDataList = async (formData?: FormData) => {
 		setPending(true);
@@ -79,6 +87,7 @@ export default function RepoList() {
 		init();
 
 		initUserName();
+		initWorkspaceList()
 	}, []);
 
 	const handleWorkspaceChange = (value: string) => {
@@ -128,8 +137,11 @@ export default function RepoList() {
 					<SelectContent>
 						<SelectGroup>
 							<SelectLabel>github.com</SelectLabel>
-							<SelectItem value="lexmin0412">lexmin0412</SelectItem>
-							<SelectItem value="xjq7">xjq7</SelectItem>
+							{
+								workspaceList.map((item)=>{
+									return <SelectItem value={item.name}>{item.name}</SelectItem>;
+								})
+							}
 						</SelectGroup>
 					</SelectContent>
 				</Select>
