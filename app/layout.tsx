@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import Main from "@/components/main";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Woodpecker",
@@ -18,7 +18,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${inter.className} text-white flex items-center h-screen`}
+				className={`text-white flex items-center h-screen`}
 			>
 				<Main>{children}</Main>
 			</body>
