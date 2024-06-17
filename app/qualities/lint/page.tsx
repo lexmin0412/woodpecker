@@ -143,7 +143,7 @@ export default function LintQualityPage({
 						})}
 					</TabsList>
 					{tabValue === "lint" ? (
-						<TabsContent value="lint">
+						<TabsContent value="lint" className="flex-1 overflow-y-auto">
 							<Card>
 								<CardHeader>
 									<CardTitle>
@@ -160,38 +160,45 @@ export default function LintQualityPage({
 								</CardHeader>
 								<CardContent>
 									<div className="flex-1 overflow-auto">
-										{content?.map((item: IProblem) => {
-											return (
-												<div
-													className="border border-solid border-gray-600 p-3 rounded-xl mb-2"
-													key={`${item.type}-${item.otherProps?.file}-${item.otherProps?.line}-${item.otherProps?.col}`}
-												>
-													<div className="flex items-start">
-														<div>{item.type}</div>
-														<span className="mr-1">:</span>
-														<div className="text-yellow-600">
-															{item.otherProps?.title}
-														</div>
-													</div>
-													<div>
-														<span className="mr-1 mt-1">file:</span>
-														<span>{"["}</span>
-														<Link
-															className="text-blue-600 hover:underline cursor-pointer"
-															href={`https://github.com/${userName}/${repoName}/blob/main/${item.otherProps?.file}#L${item.otherProps?.line}`}
-															target="_blank"
-														>
-															{item.otherProps?.file}
-															{":"}
-															{item.otherProps?.line}
-														</Link>
-														<span>{":"}</span>
-														<span>{item.otherProps?.col}</span>
-														<span>{"]"}</span>
-													</div>
-												</div>
-											);
-										})}
+										<Table>
+											<TableCaption>
+												共 {content?.length || 0} 条
+											</TableCaption>
+											<TableHeader>
+												<TableRow>
+													<TableHead className="w-[100px]">类型</TableHead>
+													<TableHead>原因</TableHead>
+													<TableHead>文件路径</TableHead>
+												</TableRow>
+											</TableHeader>
+											<TableBody>
+												{content?.map((child) => (
+													<TableRow
+														key={`${child.type}-${child.otherProps?.file}-${child.otherProps?.line}-${child.otherProps?.col}`}
+													>
+														<TableCell className="font-medium">
+															{child.type}
+														</TableCell>
+														<TableCell className="font-medium">
+															{child.otherProps?.title}
+														</TableCell>
+														<TableCell>
+															<Link
+																className="text-blue-600 hover:underline cursor-pointer"
+																href={`https://github.com/${userName}/${repoName}/blob/main/${child.otherProps?.file}#L${child.otherProps?.line}`}
+																target="_blank"
+															>
+																{child.otherProps?.file}
+																{":"}
+																{child.otherProps?.line}
+																{':'}
+																{child.otherProps?.col}
+															</Link>
+														</TableCell>
+													</TableRow>
+												))}
+											</TableBody>
+										</Table>
 									</div>
 								</CardContent>
 							</Card>
