@@ -12,23 +12,24 @@ export interface OssClientInitProps {
 	accessKeyId: string;
 	accessKeySecret: string;
 	bucket: string;
+	subDir: string
 }
 
 class OssClient {
 	constructor(props: OssClientInitProps) {
+		const { subDir, ...restProps } = props
 		const store = new OSS({
-			region: props.region,
-			accessKeyId: props.accessKeyId,
-			accessKeySecret: props.accessKeySecret,
-			bucket: props.bucket,
+			...restProps
 		});
 		this.store = store;
+		this.subDir = subDir
 	}
 
+	subDir: string
 	store: OSS;
 
 	getList(projectInfo: any) {
-		return this.store.get(`/apis/woodpecker/lint/${projectInfo.platform}__${projectInfo.userName}__${projectInfo.repoName}.json`, undefined, {
+		return this.store.get(`/apis/woodpecker/${this.subDir}/${projectInfo.platform}__${projectInfo.userName}__${projectInfo.repoName}.json`, undefined, {
 			headers: {
 				'Content-type': 'application/json'
 			}
@@ -40,7 +41,7 @@ class OssClient {
 		userName: string
 		repoName: string
 	}) {
-		const filePath = `/apis/woodpecker/lint/${projectInfo.platform}__${projectInfo.userName}__${projectInfo.repoName}.json`
+		const filePath = `/apis/woodpecker/${this.subDir}/${projectInfo.platform}__${projectInfo.userName}__${projectInfo.repoName}.json`
 		try {
 			await this.store.head(filePath)
 		} catch (error) {
@@ -68,15 +69,30 @@ class OssClient {
 		userName: string
 		repoName: string
 	}) {
-		return this.store.put(`/apis/woodpecker/lint/${projectInfo.platform}__${projectInfo.userName}__${projectInfo.repoName}.json`, Buffer.from(fileContent))
+		return this.store.put(`/apis/woodpecker/${this.subDir}/${projectInfo.platform}__${projectInfo.userName}__${projectInfo.repoName}.json`, Buffer.from(fileContent))
 	}
 }
 
-const ossClientInstance = new OssClient({
+/**
+ * lint
+ */
+export const lintOSSClientInstance = new OssClient({
 	region: process.env.OSS_REGION || '',
 	accessKeyId: process.env.OSS_ACCESS_KEY || '',
 	accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET || '',
 	bucket: process.env.OSS_BUCKET || '',
+	subDir: 'lint'
 })
 
-export default ossClientInstance
+/**
+ * knip
+ */
+export const knipOSSClientInstance = new OssClient({
+	region: process.env.OSS_REGION || '',
+	accessKeyId: process.env.OSS_ACCESS_KEY || '',
+	accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET || '',
+	bucket: process.env.OSS_BUCKET || '',
+	subDir: 'knip'
+})
+
+export default lintOSSClientInstance
