@@ -1,5 +1,7 @@
 "use client";
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import fetch from "@toolkit-fe/request";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -30,6 +32,7 @@ export default function LintQualityPage({
 	const [loading, setLoading] = useState(false);
 	const [errText, setErrText] = useState<string>("");
 	const [lastUpdated, setLastUpdated] = useState<string>("");
+	const [tabValue, setTabValue] = useState('lint')
 
 	const initContent = async () => {
 		const platform = "github";
@@ -84,6 +87,21 @@ export default function LintQualityPage({
 		};
 	}, [content]);
 
+	const FunctionTabs = [
+		{
+			value: 'lint',
+			label: 'Lint'
+		},
+		{
+			value: 'unused',
+			label: 'Unused'
+		}
+	]
+
+	const handleTabChange = (newTab: string) => {
+		setTabValue(newTab)
+	}
+
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen">
 			<div className="h-20 px-6 w-full flex justify-between items-center border-b border-solid border-gray-700">
@@ -96,46 +114,88 @@ export default function LintQualityPage({
 				 {loading ? '检测中...' : '检测'}
 				</button>
 			</div>
-			<div className="flex-1 flex-col flex overflow-hidden w-full">
-				<div className="flex items-center justify-between px-6 py-4">
-					<div className="text-left">
-						{typeCountMap.error} Errors, {typeCountMap.warning} Warnings.
-					</div>
-					{errText ? (
-						<div className="text-red-600">{errText}</div>
-					) : (
-						<div>最后更新时间：{lastUpdated || '未知'}</div>
-					)}
-				</div>
-				<div className="flex-1 overflow-auto px-6">
-					{content?.map((item: IProblem) => {
-						return (
-							<div className="border border-solid border-gray-600 p-3 rounded-xl mb-2" key={`${item.type}-${item.otherProps.file}-${item.otherProps.line}-${item.otherProps.col}`}>
-								<div className="flex items-start">
-									<div>{item.type}</div>
-									<span className="mr-1">:</span>
-									<div className="text-yellow-600">{item.otherProps.title}</div>
+
+			<div className="flex-1 flex-col flex overflow-hidden w-full px-6 py-6">
+
+				<Tabs defaultValue="lint" value={tabValue} onValueChange={handleTabChange} className='w-full'>
+					<TabsList className="grid w-full grid-cols-2">
+						{
+							FunctionTabs.map((item)=>{
+								return (
+									<TabsTrigger key={item.value} value={item.value}>{item.label}</TabsTrigger>
+								)
+							})
+						}
+					</TabsList>
+					<TabsContent value="lint">
+						<Card>
+							<CardHeader>
+								<CardTitle>{typeCountMap.error} Errors, {typeCountMap.warning} Warnings.</CardTitle>
+								<CardDescription>
+								{errText ? (
+								<div className="text-red-600">{errText}</div>
+							) : (
+								<div>最后更新时间：{lastUpdated || '未知'}</div>
+							)}
+								</CardDescription>
+							</CardHeader>
+							{/* <div className="flex items-center justify-between py-4">
+								<div className="text-left">
+									{typeCountMap.error} Errors, {typeCountMap.warning} Warnings.
 								</div>
-								<div>
-									<span className="mr-1 mt-1">file:</span>
-									<span>{"["}</span>
-									<Link
-										className="text-blue-600 hover:underline cursor-pointer"
-										href={`https://github.com/${userName}/${repoName}/blob/main/${item.otherProps.file}#L${item.otherProps.line}`}
-										target='_blank'
-									>
-										{item.otherProps.file}
-										{":"}
-										{item.otherProps.line}
-									</Link>
-									<span>{":"}</span>
-									<span>{item.otherProps.col}</span>
-									<span>{"]"}</span>
+								{errText ? (
+									<div className="text-red-600">{errText}</div>
+								) : (
+									<div>最后更新时间：{lastUpdated || '未知'}</div>
+								)}
+							</div> */}
+							<CardContent>
+								<div className="flex-1 overflow-auto">
+									{content?.map((item: IProblem) => {
+										return (
+											<div className="border border-solid border-gray-600 p-3 rounded-xl mb-2" key={`${item.type}-${item.otherProps.file}-${item.otherProps.line}-${item.otherProps.col}`}>
+												<div className="flex items-start">
+													<div>{item.type}</div>
+													<span className="mr-1">:</span>
+													<div className="text-yellow-600">{item.otherProps.title}</div>
+												</div>
+												<div>
+													<span className="mr-1 mt-1">file:</span>
+													<span>{"["}</span>
+													<Link
+														className="text-blue-600 hover:underline cursor-pointer"
+														href={`https://github.com/${userName}/${repoName}/blob/main/${item.otherProps.file}#L${item.otherProps.line}`}
+														target='_blank'
+													>
+														{item.otherProps.file}
+														{":"}
+														{item.otherProps.line}
+													</Link>
+													<span>{":"}</span>
+													<span>{item.otherProps.col}</span>
+													<span>{"]"}</span>
+												</div>
+											</div>
+										);
+									})}
 								</div>
-							</div>
-						);
-					})}
-				</div>
+							</CardContent>
+						</Card>
+					</TabsContent>
+					<TabsContent value="unused">
+						<Card>
+							<CardHeader>
+								<CardTitle>Unused</CardTitle>
+								<CardDescription>
+									本结果使用 knip v5.20 输出。
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-2">
+
+							</CardContent>
+						</Card>
+					</TabsContent>
+				</Tabs>
 			</div>
 		</div>
 	);
