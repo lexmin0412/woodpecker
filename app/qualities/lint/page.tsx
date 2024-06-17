@@ -1,5 +1,6 @@
 "use client";
 
+import { Accordion } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import fetch from "@toolkit-fe/request";
@@ -34,11 +35,11 @@ export default function LintQualityPage({
 	const [lastUpdated, setLastUpdated] = useState<string>("");
 	const [tabValue, setTabValue] = useState('lint')
 
-	const initContent = async () => {
+	const initContent = async (tab?: 'lint' | 'unused') => {
 		const platform = "github";
 		if (searchParams.userName && searchParams.repoName) {
 			const content = (await fetch(
-				`/api/qualities/lint?userName=${userName}&repoName=${repoName}&platform=${platform}`,
+				`/api/qualities/lint?userName=${userName}&repoName=${repoName}&platform=${platform}&tool=${tab || tabValue}`,
 				{
 					method: "get",
 				}
@@ -69,6 +70,7 @@ export default function LintQualityPage({
 				body: JSON.stringify({
 					userName: userName,
 					repoName: repoName,
+					tool: tabValue
 				}),
 			})) as string;
 			setContent(JSON.parse(result));
@@ -81,6 +83,12 @@ export default function LintQualityPage({
 	};
 
 	const typeCountMap = useMemo(() => {
+		if (!content.length || typeof content === 'string') {
+			return {
+				warning: 0,
+				error: 0
+			}
+		}
 		return {
 			warning: content.filter((item) => item.type === "warning")?.length,
 			error: content.filter((item) => item.type === "error")?.length,
@@ -100,6 +108,8 @@ export default function LintQualityPage({
 
 	const handleTabChange = (newTab: string) => {
 		setTabValue(newTab)
+		setContent([])
+		initContent(newTab as 'lint' | 'unused')
 	}
 
 	return (
@@ -117,8 +127,8 @@ export default function LintQualityPage({
 
 			<div className="flex-1 flex-col flex overflow-hidden w-full px-6 py-6">
 
-				<Tabs defaultValue="lint" value={tabValue} onValueChange={handleTabChange} className='w-full'>
-					<TabsList className="grid w-full grid-cols-2">
+				<Tabs defaultValue="lint" value={tabValue} onValueChange={handleTabChange} className='w-full h-full flex flex-col'>
+					<TabsList className={`grid w-full grid-cols-2`}>
 						{
 							FunctionTabs.map((item)=>{
 								return (
@@ -127,74 +137,122 @@ export default function LintQualityPage({
 							})
 						}
 					</TabsList>
-					<TabsContent value="lint">
-						<Card>
-							<CardHeader>
-								<CardTitle>{typeCountMap.error} Errors, {typeCountMap.warning} Warnings.</CardTitle>
-								<CardDescription>
-								{errText ? (
-								<div className="text-red-600">{errText}</div>
-							) : (
-								<div>最后更新时间：{lastUpdated || '未知'}</div>
-							)}
-								</CardDescription>
-							</CardHeader>
-							{/* <div className="flex items-center justify-between py-4">
-								<div className="text-left">
-									{typeCountMap.error} Errors, {typeCountMap.warning} Warnings.
-								</div>
-								{errText ? (
+					{
+						tabValue === 'lint' ?
+						<TabsContent value="lint">
+							<Card>
+								<CardHeader>
+									<CardTitle>{typeCountMap.error} Errors, {typeCountMap.warning} Warnings.</CardTitle>
+									<CardDescription>
+									{errText ? (
 									<div className="text-red-600">{errText}</div>
 								) : (
 									<div>最后更新时间：{lastUpdated || '未知'}</div>
 								)}
-							</div> */}
-							<CardContent>
-								<div className="flex-1 overflow-auto">
-									{content?.map((item: IProblem) => {
-										return (
-											<div className="border border-solid border-gray-600 p-3 rounded-xl mb-2" key={`${item.type}-${item.otherProps.file}-${item.otherProps.line}-${item.otherProps.col}`}>
-												<div className="flex items-start">
-													<div>{item.type}</div>
-													<span className="mr-1">:</span>
-													<div className="text-yellow-600">{item.otherProps.title}</div>
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<div className="flex-1 overflow-auto">
+										{content?.map((item: IProblem) => {
+											return (
+												<div className="border border-solid border-gray-600 p-3 rounded-xl mb-2" key={`${item.type}-${item.otherProps?.file}-${item.otherProps?.line}-${item.otherProps?.col}`}>
+													<div className="flex items-start">
+														<div>{item.type}</div>
+														<span className="mr-1">:</span>
+														<div className="text-yellow-600">{item.otherProps?.title}</div>
+													</div>
+													<div>
+														<span className="mr-1 mt-1">file:</span>
+														<span>{"["}</span>
+														<Link
+															className="text-blue-600 hover:underline cursor-pointer"
+															href={`https://github.com/${userName}/${repoName}/blob/main/${item.otherProps?.file}#L${item.otherProps?.line}`}
+															target='_blank'
+														>
+															{item.otherProps?.file}
+															{":"}
+															{item.otherProps?.line}
+														</Link>
+														<span>{":"}</span>
+														<span>{item.otherProps?.col}</span>
+														<span>{"]"}</span>
+													</div>
 												</div>
-												<div>
-													<span className="mr-1 mt-1">file:</span>
-													<span>{"["}</span>
-													<Link
-														className="text-blue-600 hover:underline cursor-pointer"
-														href={`https://github.com/${userName}/${repoName}/blob/main/${item.otherProps.file}#L${item.otherProps.line}`}
-														target='_blank'
-													>
-														{item.otherProps.file}
-														{":"}
-														{item.otherProps.line}
-													</Link>
-													<span>{":"}</span>
-													<span>{item.otherProps.col}</span>
-													<span>{"]"}</span>
-												</div>
-											</div>
-										);
-									})}
-								</div>
-							</CardContent>
-						</Card>
-					</TabsContent>
-					<TabsContent value="unused">
-						<Card>
-							<CardHeader>
-								<CardTitle>Unused</CardTitle>
-								<CardDescription>
-									本结果使用 knip v5.20 输出。
-								</CardDescription>
-							</CardHeader>
-							<CardContent className="space-y-2">
+											);
+										})}
+									</div>
+								</CardContent>
+							</Card>
+						</TabsContent>
+						:
+						tabValue === 'unused' ?
+						<TabsContent value="unused" className="flex-1 overflow-y-auto">
+							<Card>
+								<CardHeader>
+									<CardTitle>Unused</CardTitle>
+									<CardDescription>
+									{errText ? (
+									<div className="text-red-600">{errText}</div>
+								) : (
+									<div>最后更新时间：{lastUpdated || '未知'}</div>
+								)}
+										本结果使用 knip v5.20 输出。
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-2">
+									{/* 子类型 */}
+									<Accordion type="single" collapsible>
+										{JSON.stringify(content)}
+										{/* {
+											content?.map((item)=>{
+												return (
+													<AccordionItem key={item.type} value={item.type}>
+														<AccordionTrigger>{item.type}</AccordionTrigger>
+														<AccordionContent>
+															{
+																item.children?.map((child)=>{
+																	return (
+																		<div key={child.name}>{child.name}</div>
+																	)
+																})
+															}
+														</AccordionContent>
+													</AccordionItem>
+												)
+											})
+										} */}
+									</Accordion>
+									{/* <Tabs defaultValue="lint" onValueChange={handleTabChange} className='w-full'>
+										<TabsList className={`w-full flex items-center overflow-auto flex-shrink-0 justify-start scroll`}>
+											{
+												content.map((item)=>{
+													return (
+														<TabsTrigger key={item.type} value={item.type}>{item.type}</TabsTrigger>
+													)
+												})
+											}
+										</TabsList>
+									</Tabs> */}
+									{/* {
+										content.map((item)=>{
+											return (
+												<div key={item.type}>
+													{item.type}
 
-							</CardContent>
-						</Card>
-					</TabsContent>
+													{item.children?.map((child)=>{
+														return (
+
+														)
+													})}
+												</div>
+											)
+										})
+									} */}
+								</CardContent>
+							</Card>
+						</TabsContent>
+						: null
+					}
 				</Tabs>
 			</div>
 		</div>
