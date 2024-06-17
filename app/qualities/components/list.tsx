@@ -27,9 +27,7 @@ export default function RepoList() {
 	const code = new URLSearchParams(searchParams).get("code");
 	const [authURL, setAuthURL] = useState("");
 	const [userName, setUserName] = useState("");
-	const [workspace, setCurrentWorkspace] = useState(
-		''
-	);
+	const [workspace, setCurrentWorkspace] = useState<string>();
 	const [workspaceList, setWorkspaceList] = useState<any[]>([]);
 
 	const initWorkspaceList = async () => {
@@ -91,10 +89,12 @@ export default function RepoList() {
 	}, []);
 
 	const handleWorkspaceChange = (value: string) => {
-		localStorage.setItem('WOODPECKER_WORKSPACE', value)
-		setCurrentWorkspace(value)
-		init();
-		initUserName();
+		if (value) {
+			localStorage.setItem('WOODPECKER_WORKSPACE', value)
+			setCurrentWorkspace(value)
+			init();
+			initUserName();
+		}
 	}
 
 	const Item = (props: IItemProps) => {
