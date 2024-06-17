@@ -2,7 +2,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { execSync } from "child_process";
 import { NextResponse } from "next/server";
-import OSSClient from '@/utils/oss'
+import { knipOSSClientInstance, lintOSSClientInstance } from '@/utils/oss'
+import { processToolOutput } from './utils/oxlint';
 
 export async function POST(request: Request) {
 	const body = await request.json();
@@ -23,28 +24,12 @@ export async function POST(request: Request) {
 
 	const repoTempPath = path.join("/tmp/woodpecker", body.repoName)
 
-	const result = execSync(`npx oxlint --format github`, {
-		cwd: repoTempPath
-	}).toString()
-	const lines = result.toString().split('\n').filter(Boolean)
-	const formattedRes = lines.map(line => {
-		const [type, ...restText] = line.split(' ')
-		const message = restText.join(' ')
-		const typeText = type.split('::')[1]
-		const otherProps: Record<string, string> = {}
-		if (message) {
-			message.split(',').forEach((item) => {
-				const [key, ...restContent] = item.split('=')
-				otherProps[key] = restContent.join('=')
-			})
-		}
-		return { type: typeText, otherProps }
-	})
-	const finalRes = JSON.stringify(formattedRes, null, 2)
+	const finalRes = processToolOutput(repoTempPath, body.tool)
 
+	const ossClient = body.tool === 'lint' ? lintOSSClientInstance : knipOSSClientInstance
 	// 上传到 OSS
 	try {
-		const upload2OSS = await OSSClient.add(finalRes, {
+		const upload2OSS = await ossClient.add(finalRes, {
 			platform: 'github',
 			userName: body.userName,
 			repoName: body.repoName,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import OSSClient from '@/utils/oss'
+import { lintOSSClientInstance, knipOSSClientInstance } from '@/utils/oss'
 import { IPlatform } from "@/types";
 
 export async function GET(request: Request) {
@@ -7,6 +7,7 @@ export async function GET(request: Request) {
 	const platform = (searchParams.get('platform') || 'github') as IPlatform
 	const userName = searchParams.get('userName') || ''
 	const repoName = searchParams.get('repoName') || ''
+	const tool = searchParams.get('tool') || 'lint'
 	if (!platform || !userName || !repoName) {
 		return NextResponse.json(JSON.stringify({
 			code: 500,
@@ -18,7 +19,8 @@ export async function GET(request: Request) {
 			}
 		}))
 	}
-	const result = await OSSClient.get({
+	const ossClient = tool === 'lint' ? lintOSSClientInstance : knipOSSClientInstance
+	const result = await ossClient.get({
 		platform,
 		userName,
 		repoName,
