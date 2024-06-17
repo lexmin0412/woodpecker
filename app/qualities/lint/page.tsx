@@ -28,7 +28,7 @@ export default function LintQualityPage({
 }: {
 	searchParams: { [key: string]: string | string[] | undefined };
 }) {
-	const [content, setContent] = useState<IProblem[]>([]);
+	const [content, setContent] = useState<any>([]);
 	const userName = searchParams.userName;
 	const repoName = searchParams.repoName;
 	const [loading, setLoading] = useState(false);
@@ -91,8 +91,8 @@ export default function LintQualityPage({
 			}
 		}
 		return {
-			warning: content.filter((item) => item.type === "warning")?.length,
-			error: content.filter((item) => item.type === "error")?.length,
+			warning: content.filter((item: any) => item.type === "warning")?.length,
+			error: content.filter((item:any) => item.type === "error")?.length,
 		};
 	}, [content]);
 
@@ -172,7 +172,7 @@ export default function LintQualityPage({
 												</TableRow>
 											</TableHeader>
 											<TableBody>
-												{content?.map((child) => (
+												{content?.map((child: any) => (
 													<TableRow
 														key={`${child.type}-${child.otherProps?.file}-${child.otherProps?.line}-${child.otherProps?.col}`}
 													>
@@ -230,7 +230,7 @@ export default function LintQualityPage({
 											</TableRow>
 										</TableHeader>
 										<TableBody>
-											{content.files?.map((child) => (
+											{content.files?.map((child: any) => (
 												<TableRow key={child}>
 													<TableCell className="font-medium">{child}</TableCell>
 													<TableCell>
@@ -249,7 +249,7 @@ export default function LintQualityPage({
 									{/* 子类型 */}
 									<div className="text-lg font-semibold">未使用的其他模块</div>
 									<Accordion type="single" collapsible>
-										{content.issues?.map((issue) => {
+										{content.issues?.map((issue: any) => {
 											const children = Object.keys(issue)
 												.filter((key) => {
 													return issue[key].length && key !== "file";
@@ -257,7 +257,7 @@ export default function LintQualityPage({
 												.reduce((prev, cur) => {
 													console.log("issue[cur]", issue[cur]);
 													return prev.concat(
-														issue[cur].map((child) => {
+														issue[cur].map((child: any) => {
 															return {
 																...child,
 																type: cur,
@@ -283,7 +283,7 @@ export default function LintQualityPage({
 																</TableRow>
 															</TableHeader>
 															<TableBody>
-																{children.map((child) => (
+																{children.map((child: any) => (
 																	<TableRow key={`${child.name}-${child.type}`}>
 																		<TableCell className="font-medium w-[200px]">
 																			{child.name}
