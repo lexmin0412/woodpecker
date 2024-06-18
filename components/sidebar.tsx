@@ -5,6 +5,15 @@ import { usePathname } from "next/navigation";
 
 const sidebarList = [
 	{
+		title: "看板",
+		children: [
+			{
+				title: "总览",
+				path: '/dashboard'
+			},
+		],
+	},
+	{
 		title: "质量管理",
 		children: [
 			{
