@@ -4,9 +4,13 @@ import { execSync } from "child_process";
 import { NextResponse } from "next/server";
 import { knipOSSClientInstance, lintOSSClientInstance } from '@/utils/oss'
 import { processToolOutput } from './utils/oxlint';
+import FCClient from '@/utils/fc'
 
 export async function POST(request: Request) {
+
 	const body = await request.json();
+  const fcExecuteRes = await FCClient.main(body)
+	console.log('fcExecuteRes', fcExecuteRes)
 	if (!fs.existsSync('/tmp')) {
 		fs.mkdirSync('/tmp')
 	}

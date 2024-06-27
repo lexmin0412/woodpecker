@@ -25,8 +25,12 @@ export default class Client {
     return new FC20230330(config);
   }
 
-  static async main(): Promise<void> {
-		console.log('进入云函数执行')
+  static async main(options: {
+		userName: string
+		repoName: string
+		tool: string
+	}): Promise<void> {
+		console.log('进入云函数执行', options)
     let client = Client.createClient();
     let invokeFunctionHeaders = new $FC20230330.InvokeFunctionHeaders({ });
     let invokeFunctionRequest = new $FC20230330.InvokeFunctionRequest({ });
@@ -36,7 +40,9 @@ export default class Client {
     try {
       // 复制代码运行请自行打印 API 的返回值
       const result = await client.invokeFunctionWithOptions("test_service$func-hi75h662", invokeFunctionRequest, invokeFunctionHeaders, runtime);
-			console.log('运行结果', result.body?.read().toString())
+			const finalRes = result.body?.read().toString()
+			console.log('运行结果', finalRes)
+			return Promise.resolve(finalRes)
     } catch (error) {
 			console.log('运行异常', error)
     } finally {
