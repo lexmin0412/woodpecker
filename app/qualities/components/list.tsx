@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAuthURL, getData, getToken } from "../actions";
+import { getData, getEnvConfig, getToken } from "../actions";
 import { useSearchParams } from "next/navigation";
 import {
 	Select,
@@ -24,7 +24,6 @@ export default function RepoList() {
 	const [data, setData] = useState([]);
 	const [pending, setPending] = useState(false);
 	const searchParams = useSearchParams();
-	const code = new URLSearchParams(searchParams).get("code");
 	const [authURL, setAuthURL] = useState("");
 	const [userName, setUserName] = useState("");
 	const [workspace, setCurrentWorkspace] = useState<string>();
@@ -56,8 +55,8 @@ export default function RepoList() {
 	};
 
 	const initAuthURL = async () => {
-		const res = 'https://hwjlg4rq-umf2bco2-e7iw38r4u1rf.c2.mcprev.cn/guard/oauth';
-		setAuthURL(`${res}?redirect_uri=${encodeURIComponent(window.location.href)}`);
+		const oauthMiddlePage = await getEnvConfig('GITHUB_OAUTH_MIDDLE_PAGE')
+		setAuthURL(`${oauthMiddlePage}?redirect_uri=${encodeURIComponent(window.location.href)}`);
 	};
 
 	const initUserName = async () => {
@@ -67,13 +66,14 @@ export default function RepoList() {
 
 	const init = async () => {
 		const githubAccessToken = localStorage.getItem("GITHUB_TOKEN");
+		const tokenInParams = new URLSearchParams(searchParams).get("token")
 
 		if (githubAccessToken) {
 			// 如果有 token 则直接请求列表
 			fetchDataList();
-		} else if (code) {
-			// 有 code 则通过 code 换 token
-			await refreshToken();
+		} else if (tokenInParams) {
+			// 有 token 则缓存后开始初始化
+			localStorage.setItem('GITHUB_TOKEN', tokenInParams)
 			init();
 		} else {
 			// 没有则展示授权入口
