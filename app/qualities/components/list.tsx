@@ -56,8 +56,8 @@ export default function RepoList() {
 	};
 
 	const initAuthURL = async () => {
-		const res = await getAuthURL();
-		setAuthURL(res);
+		const res = 'https://hwjlg4rq-umf2bco2-e7iw38r4u1rf.c2.mcprev.cn/guard/oauth';
+		setAuthURL(`${res}?redirect_uri=${encodeURIComponent(window.location.href)}`);
 	};
 
 	const initUserName = async () => {
