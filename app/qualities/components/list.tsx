@@ -21,10 +21,10 @@ interface IItemProps {
 }
 
 export default function RepoList() {
-	const githubAccessToken = localStorage.getItem("GITHUB_TOKEN")
 	const [data, setData] = useState([]);
 	const [pending, setPending] = useState(false);
 	const searchParams = useSearchParams();
+	const [githubAccessToken, setGithubAccessToken] = useState('')
 	const [authURL, setAuthURL] = useState("");
 	const [userName, setUserName] = useState("");
 	const [workspace, setCurrentWorkspace] = useState<string>();
@@ -38,6 +38,7 @@ export default function RepoList() {
 
 	const fetchDataList = async (formData?: FormData) => {
 		setPending(true);
+		const githubAccessToken = localStorage.getItem("GITHUB_TOKEN")
 		const data = await getData(
 			githubAccessToken as string,
 			localStorage.getItem('WOODPECKER_WORKSPACE') as string,
@@ -59,13 +60,14 @@ export default function RepoList() {
 
 	const init = async () => {
 		const tokenInParams = new URLSearchParams(searchParams).get("token")
-
+		const githubAccessToken = localStorage.getItem("GITHUB_TOKEN")
 		if (githubAccessToken) {
 			// 如果有 token 则直接请求列表
 			fetchDataList();
 		} else if (tokenInParams) {
 			// 有 token 则缓存后开始初始化
 			localStorage.setItem('GITHUB_TOKEN', tokenInParams)
+			setGithubAccessToken(tokenInParams)
 			init();
 		} else {
 			// 没有则展示授权入口
