@@ -21,6 +21,7 @@ interface IItemProps {
 }
 
 export default function RepoList() {
+	const githubAccessToken = localStorage.getItem("GITHUB_TOKEN")
 	const [data, setData] = useState([]);
 	const [pending, setPending] = useState(false);
 	const searchParams = useSearchParams();
@@ -38,20 +39,12 @@ export default function RepoList() {
 	const fetchDataList = async (formData?: FormData) => {
 		setPending(true);
 		const data = await getData(
-			localStorage.getItem("GITHUB_TOKEN") as string,
+			githubAccessToken as string,
 			localStorage.getItem('WOODPECKER_WORKSPACE') as string,
 			formData,
 		);
 		setData(data);
 		setPending(false);
-	};
-
-	const refreshToken = async () => {
-		const res = await getToken(code as string);
-		if (res.access_token) {
-			localStorage.setItem("GITHUB_TOKEN", res.access_token);
-			return res.access_token;
-		}
 	};
 
 	const initAuthURL = async () => {
@@ -65,7 +58,6 @@ export default function RepoList() {
 	};
 
 	const init = async () => {
-		const githubAccessToken = localStorage.getItem("GITHUB_TOKEN");
 		const tokenInParams = new URLSearchParams(searchParams).get("token")
 
 		if (githubAccessToken) {
@@ -145,12 +137,16 @@ export default function RepoList() {
 						</SelectGroup>
 					</SelectContent>
 				</Select>
-				<input
-					name="keyword"
-					type="search"
-					placeholder="请输入仓库名"
-					className="bg-gray-800 text-white border-gray-700 px-4 outline-none border-solid border  h-10 leading-10 text-sm rounded-3xl w-60"
-				/>
+				{
+					githubAccessToken ?
+					<input
+						name="keyword"
+						type="search"
+						placeholder="请输入仓库名"
+						className="bg-gray-800 text-white border-gray-700 px-4 outline-none border-solid border  h-10 leading-10 text-sm rounded-3xl w-60"
+					/>
+					: null
+				}
 				{authURL ? <a href={authURL}>授权</a> : null}
 			</header>
 			<div className="overflow-auto px-6 flex-1">
