@@ -4,6 +4,18 @@ import FC20230330, * as $FC20230330 from '@alicloud/fc20230330';
 import * as $OpenApi from '@alicloud/openapi-client';
 import * as $Util from '@alicloud/tea-util';
 // import * as $tea from '@alicloud/tea-typescript';
+
+const { Readable } = require('stream');
+/**
+ * 创建一个 Readable Stream
+ * @returns
+ */
+function stringToStream(str: string) {
+  const stream = new Readable();
+  stream.push(str);
+  stream.push(null); // 表示流的结束
+  return stream;
+}
 export default class Client {
 
   /**
@@ -33,7 +45,9 @@ export default class Client {
 		console.log('进入云函数执行', options)
     let client = Client.createClient();
     let invokeFunctionHeaders = new $FC20230330.InvokeFunctionHeaders({ });
-    let invokeFunctionRequest = new $FC20230330.InvokeFunctionRequest({ });
+    let invokeFunctionRequest = new $FC20230330.InvokeFunctionRequest({
+			body: stringToStream(JSON.stringify(options))
+		});
     let runtime = new $Util.RuntimeOptions({
 			readTimeout: process.env.ALI_CLOUD_FC_FUNCTION_TIMEOUT
 		});
