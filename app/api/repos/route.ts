@@ -9,31 +9,36 @@ import FCClient from '@/utils/fc'
 export async function POST(request: Request) {
 
 	const body = await request.json();
-  const fcExecuteRes = await FCClient.main(body)
-	console.log('fcExecuteRes', fcExecuteRes)
-	if (!fs.existsSync('/tmp')) {
-		fs.mkdirSync('/tmp')
-	}
-	fs.rmSync('/tmp/woodpecker', {
-		force: true,
-		recursive: true
-	})
-	fs.mkdirSync('/tmp/woodpecker');
-	execSync(
-		`git clone https://github.com/${body.userName}/${body.repoName}.git`,
-		{
-			cwd: "/tmp/woodpecker",
+
+	let toolOutput = ''
+
+	if (body.tool === 'lint') {
+		toolOutput = await FCClient.main(body)
+	} else {
+		if (!fs.existsSync('/tmp')) {
+			fs.mkdirSync('/tmp')
 		}
-	);
+		fs.rmSync('/tmp/woodpecker', {
+			force: true,
+			recursive: true
+		})
+		fs.mkdirSync('/tmp/woodpecker');
+		execSync(
+			`git clone https://github.com/${body.userName}/${body.repoName}.git`,
+			{
+				cwd: "/tmp/woodpecker",
+			}
+		);
 
-	const repoTempPath = path.join("/tmp/woodpecker", body.repoName)
+		const repoTempPath = path.join("/tmp/woodpecker", body.repoName)
 
-	const finalRes = processToolOutput(repoTempPath, body.tool)
+		toolOutput = processToolOutput(repoTempPath, body.tool)
+	}
 
 	const ossClient = body.tool === 'lint' ? lintOSSClientInstance : knipOSSClientInstance
 	// 上传到 OSS
 	try {
-		const upload2OSS = await ossClient.add(finalRes, {
+		const upload2OSS = await ossClient.add(toolOutput, {
 			platform: 'github',
 			userName: body.userName,
 			repoName: body.repoName,
@@ -43,7 +48,7 @@ export async function POST(request: Request) {
 		console.error('upload2OSS error', error)
 	}
 
-	return NextResponse.json(finalRes);
+	return NextResponse.json(toolOutput);
 }
 
 export async function GET(request: Request) {
