@@ -41,7 +41,7 @@ export default class Client {
 		userName: string
 		repoName: string
 		tool: string
-	}): Promise<void> {
+	}): Promise<any> {
 		console.log('进入云函数执行', options)
     let client = Client.createClient();
     let invokeFunctionHeaders = new $FC20230330.InvokeFunctionHeaders({ });
