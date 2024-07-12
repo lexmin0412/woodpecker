@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	basePath: '/woodpecker',
 	reactStrictMode: false,
 	async headers() {
 		return [
