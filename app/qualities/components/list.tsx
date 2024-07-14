@@ -50,7 +50,9 @@ export default function RepoList() {
 
 	const initAuthURL = async () => {
 		const oauthMiddlePage = await getEnvConfig('GITHUB_OAUTH_MIDDLE_PAGE')
-		setAuthURL(`${oauthMiddlePage}?redirect_uri=${encodeURIComponent(window.location.href)}`);
+		setAuthURL(
+			`${oauthMiddlePage}?sourceURI=${encodeURIComponent(window.location.href)}`
+		);
 	};
 
 	const initUserName = async () => {
